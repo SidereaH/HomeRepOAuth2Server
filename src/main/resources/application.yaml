@@ -36,5 +36,5 @@ logging:
 #        secret: 3yYVzp5nVElAYg123uRpOMq+fzQfFQ6OgoxTKuUz9Fg=
 #        lifetime: 60000
 server:
-  port: 8081
+  port: 8082
 

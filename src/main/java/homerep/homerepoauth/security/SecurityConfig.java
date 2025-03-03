@@ -16,19 +16,21 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
                 .authorizeHttpRequests(auth ->
-                        auth.anyRequest().authenticated()
+
+                        auth .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/user/**").hasRole("USER")
+                                .requestMatchers("/employee/**").hasAnyRole("EMPL", "ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .formLogin(
                         Customizer.withDefaults()
                 );
         return http.build();
-
     }
 
     @Bean
