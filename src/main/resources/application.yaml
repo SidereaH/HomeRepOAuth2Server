@@ -37,4 +37,7 @@ logging:
 #        lifetime: 60000
 server:
   port: 8082
+homerep:
+  secret: "yo78$$dontCrackPlease"
+  lifetime: 300000000000
 

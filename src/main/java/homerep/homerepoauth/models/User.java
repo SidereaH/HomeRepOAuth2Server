@@ -10,8 +10,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -19,13 +17,25 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    private final String username;
-    private final String password;
+    private  String username;
+    private  String password;
     @Column(unique = true)
-    private final String email;
-    @Column(unique = true)
-    private final String phone;
-    private final String role;
+    private  String email;
+
+    private  String phone;
+    private  String role;
+
+    public User(String username, String password, String email, String phone, String role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+    }
+
+    public User() {
+
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

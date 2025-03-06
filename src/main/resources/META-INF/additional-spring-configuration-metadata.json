@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "homerep.secret",
+      "type": "java.lang.String",
+      "description": "Description for homerep.secret."
+  }
+] }
