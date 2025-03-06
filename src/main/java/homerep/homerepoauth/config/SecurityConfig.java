@@ -33,10 +33,17 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults());
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/register", "/register/**", "/login", "/login/**").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home", true)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login")
+                        .permitAll());
         return http.build();
-
     }
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {

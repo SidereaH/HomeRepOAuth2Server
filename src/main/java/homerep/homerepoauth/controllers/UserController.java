@@ -19,9 +19,10 @@ public class UserController {
 
     // Создание пользователя
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public String createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
+
+        return "redirect:/login?registered";
     }
 
     @PutMapping("/{id}")
@@ -47,4 +48,10 @@ public class UserController {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/register")
+    public String showRegistrationForm() {
+        return "register";
+    }
+
 }
