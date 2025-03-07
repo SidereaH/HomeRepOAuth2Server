@@ -20,7 +20,7 @@ public class UserController {
     // Создание пользователя
     @PostMapping
     public String createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
+        userService.createUser(user);
 
         return "redirect:/login?registered";
     }
