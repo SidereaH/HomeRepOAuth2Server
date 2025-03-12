@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_container_authtest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: homerep_auth
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - homerep-network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container_authtest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "80:80"
+    networks:
+      - homerep-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  auth-service:
+    image: aliquamsiderea/homerep_auth
+    container_name: auth_container
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/homerep_auth
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - HOMEREP_SECRET=yo78$$dontCrackPleaseASdujisdufasbasu
+      - HOMEREP_LIFETIME=600000
+    ports:
+      - "8082:8082"
+    networks:
+      - homerep-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  homerep-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  pgadmin-data:
