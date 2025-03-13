@@ -7,31 +7,32 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: homerep_auth
+      POSTGRES_DB: postgres
       PGDATA: /data/postgres
     volumes:
       - postgres-data:/data/postgres
+      - ./initdb:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "5434:5432"
     networks:
       - homerep-network
-    restart: unless-stopped
+#    restart: unless-stopped
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin_container_authtest
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    ports:
-      - "80:80"
-    networks:
-      - homerep-network
-    depends_on:
-      - postgres
-    restart: unless-stopped
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgadmin_container_authtest
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#      PGADMIN_DEFAULT_PASSWORD: admin
+#    volumes:
+#      - pgadmin-data:/var/lib/pgadmin
+#    ports:
+#      - "8008:80"
+#    networks:
+#      - homerep-network
+#    depends_on:
+#      - postgres
+#    restart: unless-stopped
 
   auth-service:
     image: aliquamsiderea/homerep_auth
@@ -45,6 +46,23 @@ services:
       - HOMEREP_LIFETIME=600000
     ports:
       - "8082:8082"
+    networks:
+      - homerep-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+  user-service:
+    image: aliquamsiderea/homerep_userservice
+    container_name: userservice_container
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/homerep_userservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - HOMEREP_SECRET=yo78$$dontCrackPleaseASdujisdufasbasu
+      - HOMEREP_LIFETIME=600000
+    ports:
+      - "8083:8083"
     networks:
       - homerep-network
     depends_on:
