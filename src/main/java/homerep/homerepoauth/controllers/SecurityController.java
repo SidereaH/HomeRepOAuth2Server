@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 @Slf4j
 @RestController
-@RequestMapping("/auth")
 public class    SecurityController {
 
     private UserRepository userRepository;
@@ -46,16 +45,12 @@ public class    SecurityController {
     public void setJwtCore(JwtCore jwtCore) {
         this.jwtCore = jwtCore;
     }
-
-
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest){
         if (userRepository.existsByUsername(signupRequest.getUsername())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
-        if (userRepository.existsByEmail(signupRequest.getEmail())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
-        }
+
 
         User user = new User();
         user.setUsername(signupRequest.getUsername());

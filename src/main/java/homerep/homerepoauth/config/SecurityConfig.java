@@ -71,15 +71,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/register", "/register/**", "/login", "/login/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
-                        .permitAll())
+                        .requestMatchers("/register", "/register/**", "/login", "/login/**", "/signin", "/signup", "/signin/**", "/signup/**").permitAll()
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);;
         return http.build();
     }

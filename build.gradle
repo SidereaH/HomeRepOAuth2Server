@@ -34,7 +34,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-authorization-server
-    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-authorization-server', version: '1.4.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.mockito:mockito-core'

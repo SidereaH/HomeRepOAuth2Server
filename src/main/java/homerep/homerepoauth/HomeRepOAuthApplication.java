@@ -21,9 +21,9 @@ public class HomeRepOAuthApplication {
             UserRepository repo, PasswordEncoder encoder) {
         return args -> {
             repo.save(
-                    new User("habuma", encoder.encode("password"), "user@gmail.com", "+71983942689","ROLE_ADMIN"));
+                    new User("habuma", encoder.encode("password"), "user@gmail.com", "+71983942689","ADMIN"));
             repo.save(
-                    new User("tacochef", encoder.encode("password"), "user2@gmail.com", "+81983942689","ROLE_ADMIN"));
+                    new User("tacochef", encoder.encode("password"), "user2@gmail.com", "+81983942689","ADMIN"));
 
         };
     }
