@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  postgres_container_authtest:
+  postgres_container_scitech:
     image: postgres:15
-    container_name: postgres_container_authtest
+    container_name: postgres_container_scitech
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -13,7 +13,7 @@ services:
       - postgres-data:/data/postgres
       - ./initdb:/docker-entrypoint-initdb.d
     ports:
-      - "5434:5432"
+      - "5432:5432"
     networks:
       - homerep-network
 #    restart: unless-stopped
@@ -35,10 +35,10 @@ services:
 #    restart: unless-stopped
 
   auth-service:
-    image: aliquamsiderea/homerep_auth
+    image: aliquamsiderea/scitech_auth:0.1.0
     container_name: auth_container
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_authtest:5432/homerep_auth
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_scitech:5432/scitech_auth
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
@@ -49,138 +49,61 @@ services:
     networks:
       - homerep-network
     depends_on:
-      - postgres_container_authtest
+      - postgres_container_scitech
     restart: unless-stopped
-  user-service:
-    image: aliquamsiderea/homerep_userservice
-    container_name: userservice_container
+  scitech-userservice:
+    image: aliquamsiderea/scitech_userservice:0.1.1
+    container_name: scitech-userservice
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_authtest:5432/homerep_userservice
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_scitech:5432/scitech_userservice
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - HOMEREP_SECRET=yo78$$dontCrackPleaseASdujisdufasbasu
-      - HOMEREP_LIFETIME=600000
+    ports:
+      - "8080:8080"
+    networks:
+      - homerep-network
+    depends_on:
+      - postgres_container_scitech
+    restart: unless-stopped
+    #парсер
+#  scitech-newsparser:
+#    image: aliquamsiderea/scitech_newsparser:0.1.1
+#    #    build: .
+#    container_name: scitech-newsparser
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_scitech:5432/scitech_newsparser
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=postgres
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+#      - SERVER_PORT=8084
+#    ports:
+#      - "8084:8084"
+#      - "4444:4444"
+#    networks:
+#      - homerep-network
+#    depends_on:
+#      - postgres_container_scitech
+#    restart: unless-stopped
+
+  scitech-newsservice:
+    image: aliquamsiderea/scitech_newsservice:0.1.2
+    #    build: .
+    container_name: scitech-newsservice
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_scitech:5432/scitech_newsservice
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - SERVER_PORT=8083
     ports:
       - "8083:8083"
     networks:
       - homerep-network
     depends_on:
-      - postgres_container_authtest
-    restart: unless-stopped
-  redis-photos:
-    image: redis:latest
-    container_name: redis-photos
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_PASSWORD=${DB_PASSWORD_CLOUD}  # Используем пароль из .env
-    command: [ "redis-server", "--requirepass", "${DB_PASSWORD_CLOUD}" ]
-    networks:
-      - homerep-network
-    volumes:
-      - redis_data:/data
+      - postgres_container_scitech
     restart: unless-stopped
 
-  go-cloud-app:
-    image: aliquamsiderea/homerep_cloud
-#      context: .  # Указываем текущую директорию как контекст сборки
-#      dockerfile: Dockerfile  # Указываем Dockerfile для сборки
-    container_name: homerep_cloud
-    ports:
-      - "${API_PORT_CLOUD}:${API_PORT_CLOUD}"  # Используем порт из .env
-    environment:
-       - API_PORT=${API_PORT_CLOUD}
-       - DB_ADDRESS=${DB_ADDRESS_CLOUD}
-       - DB_PASSWORD=${DB_PASSWORD_CLOUD}
-       - DB_NAME=${DB_NAME_CLOUD}
-       - API_ADDRESS=${API_ADDRESS_CLOUD}
-    networks:
-      - homerep-network
-    depends_on:
-      - redis-photos
-    restart: unless-stopped
-  timescale_location_db:
-    image: timescale/timescaledb:latest-pg15
-    container_name: timescale_location_db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: location_service
-    ports:
-      - "5433:5432"
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "user", "-d", "location_service" ]
-      interval: 10s
-      retries: 5
-      start_period: 10s
-    networks:
-      - homerep-network
-    restart: unless-stopped
-
-  grpc-location-server:
-    image: aliquamsiderea/homerep_location_server
-    container_name: grpc-location-server
-    ports:
-      - "50051:50051"
-    depends_on:
-      timescale_location_db:
-        condition: service_healthy
-    environment:
-      DB_HOST: timescale_location_db
-      DB_PORT: 5433
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: location_service
-    networks:
-      - homerep-network
-    restart: unless-stopped
-
-
-  notification-service:
-    image: aliquamsiderea/homerep_notificationservice
-    container_name: notifications
-#    depends_on:
-    environment:
-     - KAFKA_BROKER=${KAFKA_BROKER}
-     - KAFKA_TOPIC=${KAFKA_TOPIC}
-     - KAFKA_GROUP=${KAFKA_GROUP}
-     - SMTP_SERVER=${SMTP_SERVER}
-     - SMTP_PORT=${SMTP_PORT}
-     - SMTP_USER=${SMTP_USER}
-     - SMTP_PASS=${SMTP_PASS}
-     - FIREBASE_KEY=${FIREBASE_KEY}
-    networks:
-      - homerep-network
-
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.1
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - homerep-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.0.1
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    networks:
-      - homerep-network
-    depends_on:
-      - zookeeper
 
 networks:
   homerep-network:
@@ -188,5 +111,3 @@ networks:
 
 volumes:
   postgres-data:
-  pgadmin-data:
-  redis_data:

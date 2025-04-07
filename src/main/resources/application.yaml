@@ -3,7 +3,7 @@ spring:
     name: HomeRepOAuth
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/homerep_auth
+    url: jdbc:postgresql://127.0.0.1:5433/homerep_auth
     username: "postgres"
     password: "postgres"
     driver-class-name: org.postgresql.Driver
@@ -38,6 +38,6 @@ logging:
 server:
   port: 8082
 homerep:
-  secret: "yo78$$dontCrackPleaseASdujisdufasbasu"
-  lifetime: 600000
+  secret: "yo78$$dontCrackPlease"
+  lifetime: 300000000000
 
