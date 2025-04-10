@@ -1,4 +1,4 @@
-package homerep.homerepoauth.models;
+package homerep.homerepoauth.models.dto;
 
 import lombok.*;
 

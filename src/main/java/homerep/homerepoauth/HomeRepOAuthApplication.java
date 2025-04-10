@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class HomeRepOAuthApplication {
@@ -21,10 +22,14 @@ public class HomeRepOAuthApplication {
             UserRepository repo, PasswordEncoder encoder) {
         return args -> {
             repo.save(
-                    new User("habuma", encoder.encode("password"), "user@gmail.com", "+71983942689","ROLE_ADMIN"));
+                    new User("habuma", encoder.encode("password"), "user@gmail.com", "71983942689","ROLE_ADMIN"));
             repo.save(
-                    new User("tacochef", encoder.encode("password"), "user2@gmail.com", "+81983942689","ROLE_ADMIN"));
+                    new User("tacochef", encoder.encode("password"), "user2@gmail.com", "81983942689","ROLE_ADMIN"));
 
         };
+    }
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
     }
 }

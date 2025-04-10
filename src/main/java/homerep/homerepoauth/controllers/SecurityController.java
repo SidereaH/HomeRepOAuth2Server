@@ -1,5 +1,8 @@
 package homerep.homerepoauth.controllers;
 import homerep.homerepoauth.models.*;
+import homerep.homerepoauth.models.dto.AuthResponse;
+import homerep.homerepoauth.models.dto.SigninRequest;
+import homerep.homerepoauth.models.dto.SignupRequest;
 import homerep.homerepoauth.repositories.RefreshTokenRepository;
 import homerep.homerepoauth.repositories.UserRepository;
 import homerep.homerepoauth.security.JwtCore;
@@ -69,18 +72,20 @@ public class    SecurityController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest) {
+        User user;
+        user = userRepository.findByPhone(signinRequest.getPhone()).orElseThrow(()  -> new RuntimeException("User not found exception"));
         Authentication authentication = null;
         try {
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getUsername(), signinRequest.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), signinRequest.getPassword()));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtCore.generateToken(authentication);
-        String refresh = jwtCore.generateRefreshToken(signinRequest.getUsername());
+        String refresh = jwtCore.generateRefreshToken(user.getUsername());
 
         RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setUsername(signinRequest.getUsername());
+        refreshTokenEntity.setUsername(user.getUsername());
         refreshTokenEntity.setToken(refresh);
         refreshTokenEntity.setExpiryDate(new Date(System.currentTimeMillis() + jwtCore.getRefreshTokenLifetime()));
         refreshTokenRepository.save(refreshTokenEntity);

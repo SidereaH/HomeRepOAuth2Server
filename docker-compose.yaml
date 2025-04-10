@@ -35,8 +35,9 @@ services:
 #    restart: unless-stopped
 
   auth-service:
-    image: aliquamsiderea/homerep_auth
+#    image: aliquamsiderea/homerep_auth
     container_name: auth_container
+    build: .
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_authtest:5432/homerep_auth
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -44,15 +45,17 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
       - HOMEREP_SECRET=yo78$$dontCrackPleaseASdujisdufasbasu
       - HOMEREP_LIFETIME=600000
+      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_PORT=8081
     ports:
-      - "8082:8082"
+      - "8081:8081"
     networks:
       - homerep-network
     depends_on:
       - postgres_container_authtest
     restart: unless-stopped
   user-service:
-    image: aliquamsiderea/homerep_userservice
+    image: aliquamsiderea/homerep_userservice:0.1.3
     container_name: userservice_container
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_container_authtest:5432/homerep_userservice
@@ -136,27 +139,27 @@ services:
       - homerep-network
     restart: unless-stopped
 
+#
+#  notification-service:
+#    image: aliquamsiderea/homerep_notificationservice
+#    container_name: notifications
+##    depends_on:
+#    environment:
+#     - KAFKA_BROKER=${KAFKA_BROKER}
+#     - KAFKA_TOPIC=${KAFKA_TOPIC}
+#     - KAFKA_GROUP=${KAFKA_GROUP}
+#     - SMTP_SERVER=${SMTP_SERVER}
+#     - SMTP_PORT=${SMTP_PORT}
+#     - SMTP_USER=${SMTP_USER}
+#     - SMTP_PASS=${SMTP_PASS}
+#     - FIREBASE_KEY=${FIREBASE_KEY}
+#    networks:
+#      - homerep-network
 
-  notification-service:
-    image: aliquamsiderea/homerep_notificationservice
-    container_name: notifications
-#    depends_on:
-    environment:
-     - KAFKA_BROKER=${KAFKA_BROKER}
-     - KAFKA_TOPIC=${KAFKA_TOPIC}
-     - KAFKA_GROUP=${KAFKA_GROUP}
-     - SMTP_SERVER=${SMTP_SERVER}
-     - SMTP_PORT=${SMTP_PORT}
-     - SMTP_USER=${SMTP_USER}
-     - SMTP_PASS=${SMTP_PASS}
-     - FIREBASE_KEY=${FIREBASE_KEY}
-    networks:
-      - homerep-network
 
-
-  zookeeper:
+  zookeeperauth:
     image: confluentinc/cp-zookeeper:7.0.1
-    container_name: zookeeper
+    container_name: zookeeperauth
     ports:
       - "2181:2181"
     environment:
@@ -173,14 +176,14 @@ services:
     environment:
 
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeperauth:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - homerep-network
     depends_on:
-      - zookeeper
+      - zookeeperauth
 
 networks:
   homerep-network:

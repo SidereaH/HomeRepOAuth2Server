@@ -2,6 +2,9 @@ package homerep.homerepoauth;
 
 import homerep.homerepoauth.controllers.SecurityController;
 import homerep.homerepoauth.models.*;
+import homerep.homerepoauth.models.dto.AuthResponse;
+import homerep.homerepoauth.models.dto.SigninRequest;
+import homerep.homerepoauth.models.dto.SignupRequest;
 import homerep.homerepoauth.repositories.RefreshTokenRepository;
 import homerep.homerepoauth.repositories.UserRepository;
 import homerep.homerepoauth.security.JwtCore;
@@ -118,7 +121,7 @@ class SecurityControllerTest {
     void testSignin_Success() {
         // Arrange
         SigninRequest signinRequest = new SigninRequest();
-        signinRequest.setUsername("testuser");
+        signinRequest.setPhone("79882578790");
         signinRequest.setPassword("password");
 
         Authentication authentication = mock(Authentication.class);
@@ -153,7 +156,7 @@ class SecurityControllerTest {
     void testSignin_InvalidCredentials() {
         // Arrange
         SigninRequest signinRequest = new SigninRequest();
-        signinRequest.setUsername("testuser");
+        signinRequest.setPhone("79882578790");
         signinRequest.setPassword("wrongpassword");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))

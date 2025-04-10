@@ -1,4 +1,4 @@
-package homerep.homerepoauth.models;
+package homerep.homerepoauth.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SigninRequest {
-    private String username;
+    private String phone;
     private String password;
 }
