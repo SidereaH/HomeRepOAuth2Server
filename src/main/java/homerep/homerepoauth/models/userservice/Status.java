@@ -1,4 +1,4 @@
-package homerep.homerepoauth.models;
+package homerep.homerepoauth.models.userservice;
 
 public enum Status {
 CLIENT,

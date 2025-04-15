@@ -41,4 +41,6 @@ server:
 homerep:
   secret: "yo78$$dontCrackPleaseASdujisdufasbasu"
   lifetime: 600000
+  userservice: "http://localhost:8083"
+  orderservice: "http://localhost:8084"
 

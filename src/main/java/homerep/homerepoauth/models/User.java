@@ -22,7 +22,7 @@ public class User implements UserDetails {
     private  String password;
     @Column(unique = true)
     private  String email;
-
+    @Column(unique = true)
     private  String phone;
     private  String role;
 

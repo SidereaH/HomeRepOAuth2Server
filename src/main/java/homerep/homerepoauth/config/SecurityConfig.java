@@ -55,14 +55,18 @@ public class SecurityConfig {
     public AuthenticationManagerBuilder configAuthenticationManagerBuilder(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder;
-    }
-    @Bean
+    }@Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer ->
-                        httpSecurityCorsConfigurer.configurationSource(request ->
-                                new CorsConfiguration().applyPermitDefaultValues())
+                        httpSecurityCorsConfigurer.configurationSource(request -> {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(List.of("*")); // Allow all origins
+                            config.setAllowedMethods(List.of("*")); // Allow all methods
+                            config.setAllowedHeaders(List.of("*")); // Allow all headers
+                            return config;
+                        })
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
@@ -72,15 +76,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/register", "/register/**", "/login", "/login/**").permitAll()
+                        .requestMatchers("/api/**").permitAll() // This should cover all /api paths
                         .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
-                        .permitAll())
-                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);;
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 //    @Bean

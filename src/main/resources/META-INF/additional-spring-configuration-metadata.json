@@ -4,5 +4,15 @@
       "name": "homerep.secret",
       "type": "java.lang.String",
       "description": "Description for homerep.secret."
-  }
-] }
+    },
+    {
+      "name": "homerep.userservice",
+      "type": "java.lang.String",
+      "description": "Description for homerep.userservice."
+    },
+    {
+      "name": "homerep.orderservice",
+      "type": "java.lang.String",
+      "description": "Description for homerep.orderservice."
+    }
+  ] }

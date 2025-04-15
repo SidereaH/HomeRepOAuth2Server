@@ -1,4 +1,4 @@
-package homerep.homerepoauth.models.dto;
+package homerep.homerepoauth.models.userservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
