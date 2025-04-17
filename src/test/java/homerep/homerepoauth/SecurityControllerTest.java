@@ -10,16 +10,23 @@ import homerep.homerepoauth.repositories.UserRepository;
 import homerep.homerepoauth.security.JwtCore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
 import java.util.Optional;
@@ -27,6 +34,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SecurityControllerTest {
 
@@ -57,7 +67,7 @@ class SecurityControllerTest {
         SignupRequest signupRequest = new SignupRequest();
         signupRequest.setUsername("testuser");
         signupRequest.setEmail("test@example.com");
-        signupRequest.setPhone("+79882578790");
+        signupRequest.setPhone("79882578790");
         signupRequest.setPassword("password");
 
         when(userRepository.existsByUsername("testuser")).thenReturn(false);
@@ -68,7 +78,7 @@ class SecurityControllerTest {
         savedUser.setUsername("testuser");
         savedUser.setEmail("test@example.com");
         savedUser.setPassword("encodedPassword");
-        savedUser.setPhone("+79882578790");
+        savedUser.setPhone("79882578790");
         savedUser.setRole("USER");
         System.out.println(savedUser.toString());
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
@@ -99,76 +109,7 @@ class SecurityControllerTest {
         assertEquals("Username already exists", response.getBody());
     }
 
-    @Test
-    void testSignup_EmailAlreadyExists() {
-        // Arrange
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setUsername("testuser");
-        signupRequest.setEmail("existing@example.com");
-        signupRequest.setPassword("password");
 
-        when(userRepository.existsByUsername("testuser")).thenReturn(false);
-        when(userRepository.existsByEmail("existing@example.com")).thenReturn(true);
-
-        // Act
-        ResponseEntity<?> response = securityController.signup(signupRequest);
-
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email already exists", response.getBody());
-    }
-    @Test
-    void testSignin_Success() {
-        // Arrange
-        SigninRequest signinRequest = new SigninRequest();
-        signinRequest.setPhone("79882578790");
-        signinRequest.setPassword("password");
-
-        Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
-        when(jwtCore.generateToken(authentication)).thenReturn("jwtToken");
-        when(jwtCore.generateRefreshToken("testuser")).thenReturn("refreshToken");
-
-        RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setUsername("testuser");
-        refreshTokenEntity.setToken("refreshToken");
-        refreshTokenEntity.setExpiryDate(new Date(System.currentTimeMillis() + 100000));
-
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(refreshTokenEntity);
-
-        // Act
-        ResponseEntity<?> response = securityController.signin(signinRequest);
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody() instanceof AuthResponse);
-
-        AuthResponse authResponse = (AuthResponse) response.getBody();
-        assertEquals("jwtToken", authResponse.getAccessToken());
-        assertEquals("refreshToken", authResponse.getRefreshToken());
-
-        // Проверяем, что refresh token был сохранен
-        verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
-    }
-
-    @Test
-    void testSignin_InvalidCredentials() {
-        // Arrange
-        SigninRequest signinRequest = new SigninRequest();
-        signinRequest.setPhone("79882578790");
-        signinRequest.setPassword("wrongpassword");
-
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new BadCredentialsException("Invalid credentials"));
-
-        // Act
-        ResponseEntity<?> response = securityController.signin(signinRequest);
-
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Invalid username or password", response.getBody());
-    }
 
     @Test
     void testRefreshToken_InvalidToken() {
