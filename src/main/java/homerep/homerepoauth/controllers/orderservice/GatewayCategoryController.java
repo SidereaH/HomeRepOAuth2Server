@@ -1,11 +1,11 @@
 package homerep.homerepoauth.controllers.orderservice;
 
-
 import homerep.homerepoauth.config.HomeRepProperties;
 import homerep.homerepoauth.models.orderservice.Category;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -15,28 +15,60 @@ import java.util.List;
 public class GatewayCategoryController {
 
     private final RestTemplate restTemplate;
-
-    private final String ORDER_SERVICE_URL ;
+    private final String ORDER_SERVICE_URL;
 
     public GatewayCategoryController(RestTemplate restTemplate, HomeRepProperties props) {
         this.restTemplate = restTemplate;
-        this.ORDER_SERVICE_URL = props.getOrderservice() +"/categories";
+        this.ORDER_SERVICE_URL = props.getOrderservice() + "/categories";
     }
 
     @GetMapping
-    public ResponseEntity<List> getAllCategories() {
-        return restTemplate.getForEntity(ORDER_SERVICE_URL, List.class);
+    public ResponseEntity<List<Category>> getAllCategories() {
+        ParameterizedTypeReference<List<Category>> responseType =
+                new ParameterizedTypeReference<List<Category>>() {};
+
+        try {
+            ResponseEntity<List<Category>> response = restTemplate.exchange(
+                    ORDER_SERVICE_URL,
+                    HttpMethod.GET,
+                    null,
+                    responseType
+            );
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity
+                    .status(e.getStatusCode())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        ResponseEntity<Category> resp;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Category> request = new HttpEntity<>(category, headers);
+
         try {
-            resp =  restTemplate.postForEntity(ORDER_SERVICE_URL, category, Category.class);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(category);
+            ResponseEntity<Category> response = restTemplate.exchange(
+                    ORDER_SERVICE_URL,
+                    HttpMethod.POST,
+                    request,
+                    Category.class
+            );
+
+            return ResponseEntity
+                    .status(response.getStatusCode())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(category);
         }
-        resp =restTemplate.postForEntity(ORDER_SERVICE_URL, category, Category.class);
-        return resp;
     }
 }
