@@ -95,7 +95,7 @@ public class    SecurityController {
         refreshTokenEntity.setToken(refresh);
         refreshTokenEntity.setExpiryDate(new Date(System.currentTimeMillis() + jwtCore.getRefreshTokenLifetime()));
         refreshTokenRepository.save(refreshTokenEntity);
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(jwt,refresh));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponse(jwt,refresh, signinRequest.getPhone()));
     }
 
     @PostMapping("/refresh")
@@ -122,7 +122,7 @@ public class    SecurityController {
         storedToken.setExpiryDate(new Date(System.currentTimeMillis() + jwtCore.getRefreshTokenLifetime()));
         refreshTokenRepository.save(storedToken);
 
-        return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
+        return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken, ""));
     }
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestParam String refreshToken) {
