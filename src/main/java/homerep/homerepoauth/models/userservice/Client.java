@@ -13,5 +13,5 @@ public class Client {
     private String lastName;
     private String email;
     private String phone;
-    private Status status = Status.CLIENT;
+    private Status status;
 }

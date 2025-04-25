@@ -2,6 +2,7 @@ package homerep.homerepoauth.controllers.userservice;
 
 import homerep.homerepoauth.config.HomeRepProperties;
 import homerep.homerepoauth.models.userservice.Client;
+import homerep.homerepoauth.models.userservice.dto.ClientResponse;
 import homerep.homerepoauth.models.userservice.dto.GeoPair;
 import homerep.homerepoauth.models.userservice.dto.GeoTimeRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -55,11 +56,11 @@ public class GatewayUsersController {
     public ResponseEntity<?> getAllClients() {
         log.info(USER_SERVICE_URL);
         try {
-            ResponseEntity<List<Client>> response = restTemplate.exchange(
+            ResponseEntity<List<ClientResponse>> response = restTemplate.exchange(
                     USER_SERVICE_URL,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<Client>>() {}
+                    new ParameterizedTypeReference<List<ClientResponse>>() {}
             );
             return ResponseEntity.ok(response.getBody());
         } catch (HttpClientErrorException e) {
@@ -70,9 +71,9 @@ public class GatewayUsersController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) {
         try {
-            ResponseEntity<Client> response = restTemplate.getForEntity(
+            ResponseEntity<ClientResponse> response = restTemplate.getForEntity(
                     USER_SERVICE_URL + "/" + id,
-                    Client.class
+                    ClientResponse.class
             );
             return ResponseEntity.ok(response.getBody());
         } catch (HttpClientErrorException e) {
@@ -84,11 +85,11 @@ public class GatewayUsersController {
     public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody Client client) {
         try {
             HttpEntity<Client> request = new HttpEntity<>(client, createHeaders());
-            ResponseEntity<Client> response = restTemplate.exchange(
+            ResponseEntity<ClientResponse> response = restTemplate.exchange(
                     USER_SERVICE_URL + "/" + id,
                     HttpMethod.PUT,
                     request,
-                    Client.class
+                    ClientResponse.class
             );
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (HttpClientErrorException e) {
