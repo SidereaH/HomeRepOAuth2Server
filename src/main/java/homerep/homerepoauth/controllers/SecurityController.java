@@ -69,6 +69,25 @@ public class    SecurityController {
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
+    @PostMapping("/create_admin")
+    public ResponseEntity<?> createAdmin(@RequestBody SignupRequest signupRequest){
+        if (userRepository.existsByUsername(signupRequest.getUsername())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
+        }
+        if (userRepository.existsByEmail(signupRequest.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+        }
+
+        User user = new User();
+        user.setUsername(signupRequest.getUsername());
+        user.setEmail(signupRequest.getEmail());
+        user.setPhone(signupRequest.getPhone());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setRole("ADMIN");
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest) {
