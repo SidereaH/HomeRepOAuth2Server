@@ -67,6 +67,18 @@ public class GatewayUsersController {
             return ResponseEntity.status(e.getStatusCode()).build();
         }
     }
+    @GetMapping("/phone")
+    public ResponseEntity<?> getClientByPhoneNumber(@RequestParam String phoneNumber) {
+        try {
+            ResponseEntity<ClientResponse> response = restTemplate.getForEntity(
+                    USER_SERVICE_URL + "/phone?phoneNumber=" + phoneNumber,
+                    ClientResponse.class
+            );
+            return ResponseEntity.ok(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
+        }
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) {
