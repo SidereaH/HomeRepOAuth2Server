@@ -9,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -75,29 +76,30 @@ public class GatewayPaymentController {
     }
 
     @PatchMapping("/activate")
-    public ResponseEntity<DefaultResponse> activatePayment(@RequestParam String paymentName) {
-        DefaultResponse response = new DefaultResponse(
-                paymentService.activatePayment(paymentName),
-                "Payment has been activated."
-        );
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
+    public Mono<ResponseEntity<DefaultResponse>> activatePayment(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestParam String paymentName) {
+        return paymentService.activatePayment(paymentName, authHeader)
+                .map(response -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(response))
+                .onErrorResume(e -> Mono.just(
+                        ResponseEntity.badRequest()
+                                .body(new DefaultResponse(null, "Error: " + e.getMessage()))
+                ));
     }
-
     @PatchMapping("/deactivate")
-    public ResponseEntity<DefaultResponse> deactivatePayment(@RequestParam String paymentName) {
-        DefaultResponse response = new DefaultResponse(
-                paymentService.deactivatePayment(paymentName),
-                "Payment has been deactivated."
-        );
-
-        return ResponseEntity.ok()
-                .header("Connection", "close")
-                .header("Content-Length",
-                        String.valueOf(response.toString().getBytes().length))
-                .body(response);
+    public Mono<ResponseEntity<DefaultResponse>> deactivatePayment(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestParam String paymentName) {
+        return paymentService.deactivatePayment(paymentName, authHeader)
+                .map(response -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(response))
+                .onErrorResume(e -> Mono.just(
+                        ResponseEntity.badRequest()
+                                .body(new DefaultResponse(null, "Error: " + e.getMessage()))
+                ));
     }
 
     @DeleteMapping
