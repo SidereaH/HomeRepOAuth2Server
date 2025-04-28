@@ -1,5 +1,6 @@
 package homerep.homerepoauth.services.orderservice;
 
+import homerep.homerepoauth.config.HomeRepProperties;
 import homerep.homerepoauth.models.orderservice.PaymentType;
 import homerep.homerepoauth.models.orderservice.dto.DefaultResponse;
 import org.springframework.stereotype.Service;
@@ -9,21 +10,23 @@ import reactor.core.publisher.Mono;
 @Service
 public class PaymentService {
     private final WebClient webClient;
+    private final String ORDER_SERVICE_URL;
 
-    public PaymentService(WebClient webClient) {
+    public PaymentService(WebClient webClient, HomeRepProperties props) {
         this.webClient = webClient;
+        this.ORDER_SERVICE_URL = props.getOrderservice() + "/payments";
     }
 
-    public Mono<DefaultResponse> activatePayment(String paymentName) {
+    public Mono<Object> activatePayment(String paymentName) {
         return webClient.patch()
-                .uri("http://localhost:8084/payments/activate?paymentName={name}", paymentName)
+                .uri(ORDER_SERVICE_URL+ "/activate?paymentName={name}", paymentName)
                 .retrieve()
-                .bodyToMono(DefaultResponse.class);
+                .bodyToMono(Object.class);
     }
-    public Mono<DefaultResponse> deactivatePayment(String paymentName) {
+    public Mono<Object> deactivatePayment(String paymentName) {
         return webClient.patch()
-                .uri("http://localhost:8084/payments/deactivate?paymentName={name}", paymentName)
+                .uri(ORDER_SERVICE_URL+ "deactivate?paymentName={name}", paymentName)
                 .retrieve()
-                .bodyToMono(DefaultResponse.class);
+                .bodyToMono(Object.class);
     }
 }
