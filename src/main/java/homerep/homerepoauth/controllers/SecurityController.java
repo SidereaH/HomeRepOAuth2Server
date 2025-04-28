@@ -1,4 +1,5 @@
 package homerep.homerepoauth.controllers;
+import homerep.homerepoauth.controllers.userservice.GatewayUsersController;
 import homerep.homerepoauth.models.*;
 import homerep.homerepoauth.models.dto.AuthResponse;
 import homerep.homerepoauth.models.dto.SigninRequest;
@@ -29,6 +30,8 @@ public class    SecurityController {
     private AuthenticationManager authenticationManager;
     private JwtCore jwtCore;
     private RefreshTokenRepository refreshTokenRepository;
+    private GatewayUsersController gatewayUsersController;
+
     @Autowired
     public void setRefreshTokenRepository(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
@@ -67,6 +70,7 @@ public class    SecurityController {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole("USER");
         userRepository.save(user);
+        gatewayUsersController.createClient(user.userToClient());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
     @PostMapping("/create_admin")
@@ -147,5 +151,10 @@ public class    SecurityController {
     public ResponseEntity<?> logout(@RequestParam String refreshToken) {
         refreshTokenRepository.findByToken(refreshToken).ifPresent(refreshTokenRepository::delete);
         return ResponseEntity.ok("Logged out successfully");
+    }
+
+    @Autowired
+    public void setGatewayUsersController(GatewayUsersController gatewayUsersController) {
+        this.gatewayUsersController = gatewayUsersController;
     }
 }

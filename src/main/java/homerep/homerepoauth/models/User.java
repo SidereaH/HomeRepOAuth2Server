@@ -1,5 +1,6 @@
 package homerep.homerepoauth.models;
 
+import homerep.homerepoauth.models.userservice.Client;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +37,13 @@ public class User implements UserDetails {
 
     public User() {
 
+    }
+    public Client userToClient(){
+        var client = new Client();
+        client.setFirstName(this.getUsername());
+        client.setEmail(this.getEmail());
+        client.setPhone(this.getPhone());
+        return client;
     }
 
     @Override
