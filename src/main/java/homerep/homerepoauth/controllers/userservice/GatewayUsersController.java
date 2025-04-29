@@ -71,7 +71,7 @@ public class GatewayUsersController {
     public ResponseEntity<?> getClientByPhoneNumber(@RequestParam String phoneNumber) {
         try {
             ResponseEntity<ClientResponse> response = restTemplate.getForEntity(
-                    USER_SERVICE_URL + "/phone?phoneNumber=" + phoneNumber,
+                    USER_SERVICE_URL + "/phone?phone=" + phoneNumber,
                     ClientResponse.class
             );
             return ResponseEntity.ok(response.getBody());
