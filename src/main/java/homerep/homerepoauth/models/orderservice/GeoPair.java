@@ -1,12 +1,15 @@
 package homerep.homerepoauth.models.orderservice;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class GeoPair {
     private  double lat;
     private  double lng;
