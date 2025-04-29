@@ -15,6 +15,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
@@ -141,11 +143,16 @@ public class GatewayUsersController {
     @GetMapping("/{id}/location")
     public ResponseEntity<?> getClientLocation(@PathVariable Long id) {
         try {
-            ResponseEntity<GeoPair> response = restTemplate.getForEntity(
+            ResponseEntity<Map<String, String>> response = restTemplate.exchange(
                     USER_SERVICE_URL + "/" + id + "/location",
-                    GeoPair.class
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Map<String, String>>() {}
             );
-            return ResponseEntity.ok(response.getBody());
+            // Convert map to GeoPair if needed
+            Map<String, String> body = response.getBody();
+            GeoPair geoPair = new GeoPair(Double.parseDouble(body.get("lat")), Double.parseDouble(body.get("lng")));
+            return ResponseEntity.ok(geoPair);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).build();
         }

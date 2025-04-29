@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class GeoPair {
     private  double lat;
     private  double lng;
@@ -22,5 +21,8 @@ public class GeoPair {
         this.lat = lat;
         this.lng = lng;
         this.time = time;
+    }
+    public GeoPair(){
+
     }
 }
