@@ -1,6 +1,7 @@
 package homerep.homerepoauth;
 
 import homerep.homerepoauth.controllers.SecurityController;
+import homerep.homerepoauth.controllers.userservice.GatewayUsersController;
 import homerep.homerepoauth.models.*;
 import homerep.homerepoauth.models.dto.SignupRequest;
 import homerep.homerepoauth.repositories.RefreshTokenRepository;
@@ -41,6 +42,8 @@ class SecurityControllerTest {
 
     @InjectMocks
     private SecurityController securityController;
+    @Mock
+    private GatewayUsersController gatewayUsersController;
 
     @BeforeEach
     void setUp() {
@@ -70,7 +73,7 @@ class SecurityControllerTest {
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // Act
-        ResponseEntity<?> response = securityController.signup(signupRequest);
+        ResponseEntity<User> response = (ResponseEntity<User>) securityController.signup(signupRequest);
         System.out.println(response.getBody());
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
