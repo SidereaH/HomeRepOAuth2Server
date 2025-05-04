@@ -73,6 +73,27 @@ public class    SecurityController {
         gatewayUsersController.createClient(user.userToClient());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
+
+    @PostMapping("/signup_wrole")
+    public ResponseEntity<?> signUpWRole(@RequestBody SignupRequest signupRequest){
+        if (userRepository.existsByUsername(signupRequest.getUsername())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
+        }
+        if (userRepository.existsByEmail(signupRequest.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+        }
+
+        User user = new User();
+        user.setUsername(signupRequest.getUsername());
+        user.setEmail(signupRequest.getEmail());
+        user.setPhone(signupRequest.getPhone());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setRole(signupRequest.getStatus().toString().toUpperCase());
+        gatewayUsersController.createClient(user.userToClient());
+        user.setRole("ROLE_USER");
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
     @PostMapping("/create_admin")
     public ResponseEntity<?> createAdmin(@RequestBody SignupRequest signupRequest){
         if (userRepository.existsByUsername(signupRequest.getUsername())){
@@ -87,7 +108,8 @@ public class    SecurityController {
         user.setEmail(signupRequest.getEmail());
         user.setPhone(signupRequest.getPhone());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRole("ADMIN");
+        user.setRole("ROLE_ADMIN");
+        gatewayUsersController.createClient(user.userToClient());
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

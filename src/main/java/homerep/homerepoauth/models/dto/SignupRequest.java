@@ -1,5 +1,6 @@
 package homerep.homerepoauth.models.dto;
 
+import homerep.homerepoauth.models.userservice.Status;
 import lombok.*;
 
 @Getter
@@ -12,4 +13,5 @@ public class SignupRequest {
     private String email;
     private String phone;
     private String password;
+    private Status status;
 }
