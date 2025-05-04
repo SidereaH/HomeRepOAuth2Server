@@ -90,7 +90,7 @@ public class    SecurityController {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole(signupRequest.getStatus().toString().toUpperCase());
         gatewayUsersController.createClient(user.userToClient());
-        user.setRole("ROLE_USER");
+        user.setRole("USER");
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
@@ -108,7 +108,7 @@ public class    SecurityController {
         user.setEmail(signupRequest.getEmail());
         user.setPhone(signupRequest.getPhone());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRole("ROLE_ADMIN");
+        user.setRole("ADMIN");
         gatewayUsersController.createClient(user.userToClient());
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
