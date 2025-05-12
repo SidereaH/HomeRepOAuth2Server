@@ -15,5 +15,6 @@ public class Client {
     private String phone;
     private Status status;
     private Double latitude;
-    private Double longitude;
+    private Double longtitude;
+
 }
