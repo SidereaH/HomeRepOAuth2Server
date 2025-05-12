@@ -35,6 +35,17 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+
+    @Transactional
+    public User updatePassword(String phone, String password) {
+        return userRepository.findByPhone(phone)
+                .map(user -> {
+                    user.setPassword(passwordEncoder.encode(password));
+                    return user;
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with phone: " + phone));
+    }
+
     // Обновление пользователя
     @Transactional
     public User updateUser(Long id, User updatedUser) {

@@ -31,10 +31,15 @@ public class    SecurityController {
     private JwtCore jwtCore;
     private RefreshTokenRepository refreshTokenRepository;
     private GatewayUsersController gatewayUsersController;
+    private UserController userController;
 
     @Autowired
     public void setRefreshTokenRepository(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
+    }
+    @Autowired
+    public void setGatewayUsersController(GatewayUsersController gatewayUsersController) {
+        this.gatewayUsersController = gatewayUsersController;
     }
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -175,8 +180,17 @@ public class    SecurityController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
-    @Autowired
-    public void setGatewayUsersController(GatewayUsersController gatewayUsersController) {
-        this.gatewayUsersController = gatewayUsersController;
-    }
+
+    //new pass
+//
+//    @PostMapping("/update_password")
+//    public ResponseEntity<?> updatePassword(@RequestParam String login){
+//        User user = userRepository.findByPhone(login).ifPresent(this::);
+//        if (!userRepository.existsByPhone(updatePasswordRequest.getUsername())){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+//        }
+//        User user = userRepository.findByUsername(updatePasswordRequest.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+//    }
+
+
 }

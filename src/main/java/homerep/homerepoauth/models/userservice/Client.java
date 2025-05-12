@@ -14,4 +14,6 @@ public class Client {
     private String email;
     private String phone;
     private Status status;
+    private Double latitude;
+    private Double longitude;
 }
