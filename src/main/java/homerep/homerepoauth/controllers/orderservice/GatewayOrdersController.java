@@ -65,6 +65,31 @@ public class GatewayOrdersController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response.getBody());
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        String url = ORDER_SERVICE_URL + "/" + id;
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                Order.class
+        );
+    }
+
+    @PutMapping
+    public ResponseEntity<DefaultResponse<Order, String>> updateOrder(@RequestBody Order order) {
+        String url = ORDER_SERVICE_URL;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Order> request = new HttpEntity<>(order, headers);
+
+        return restTemplate.exchange(
+                url,
+                HttpMethod.PUT,
+                request,
+                new ParameterizedTypeReference<DefaultResponse<Order, String>>() {}
+        );
+    }
 
     @PostMapping("/order/findWorker")
     public ResponseEntity<Integer> findWorker(@RequestParam String orderID) {
