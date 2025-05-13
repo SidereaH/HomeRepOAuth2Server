@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -71,4 +72,25 @@ public class GatewayCategoryController {
                     .body(category);
         }
     }
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        String url = ORDER_SERVICE_URL + "/" + categoryId;
+
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.DELETE,
+                    null,
+                    Void.class
+            );
+
+            return ResponseEntity.status(response.getStatusCode()).build();
+        } catch (HttpClientErrorException.NotFound ex) {
+            return ResponseEntity.notFound().build();
+        } catch (RestClientException ex) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 }
