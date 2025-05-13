@@ -80,7 +80,7 @@ public class GatewayOrdersController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response.getBody());
     }
-    @GetMapping("/{id}")
+    @GetMapping("/order/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         String url = ORDER_SERVICE_URL + "/" + id;
         return restTemplate.exchange(
