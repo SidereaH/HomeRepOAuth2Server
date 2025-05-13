@@ -82,7 +82,7 @@ public class GatewayOrdersController {
     }
     @GetMapping("/order/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        String url = ORDER_SERVICE_URL + "/" + id;
+        String url = ORDER_SERVICE_URL + "/order/" + id;
         return restTemplate.exchange(
                 url,
                 HttpMethod.GET,
