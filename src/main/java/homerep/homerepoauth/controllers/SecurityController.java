@@ -4,13 +4,16 @@ import homerep.homerepoauth.models.*;
 import homerep.homerepoauth.models.dto.AuthResponse;
 import homerep.homerepoauth.models.dto.SigninRequest;
 import homerep.homerepoauth.models.dto.SignupRequest;
+import homerep.homerepoauth.models.orderservice.dto.ApproveRequest;
 import homerep.homerepoauth.repositories.RefreshTokenRepository;
 import homerep.homerepoauth.repositories.UserRepository;
 import homerep.homerepoauth.security.JwtCore;
+import homerep.homerepoauth.services.CodeGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +35,7 @@ public class    SecurityController {
     private RefreshTokenRepository refreshTokenRepository;
     private GatewayUsersController gatewayUsersController;
     private UserController userController;
-
+    private KafkaTemplate<String, ApproveRequest> kafkaTemplate;
     @Autowired
     public void setRefreshTokenRepository(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
@@ -75,6 +78,7 @@ public class    SecurityController {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole("USER");
         userRepository.save(user);
+        kafkaTemplate.send("approve-topic",new ApproveRequest(signupRequest.getEmail(), CodeGenerator.generate4DigitCode()));
         gatewayUsersController.createClient(user.userToClient());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

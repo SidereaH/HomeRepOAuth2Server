@@ -49,21 +49,21 @@ public class GatewayOrdersController {
                     .body(new DefaultResponse(order, e.getMessage()));
         }
     }
-    @GetMapping("/user/{clientId}")
-    public ResponseEntity<List<Object>> getUserOrders(@PathVariable Long clientId) {
-        String url = ORDER_SERVICE_URL + "/user/" + clientId;
+        @GetMapping("/user/{clientId}")
+        public ResponseEntity<List<Object>> getUserOrders(@PathVariable Long clientId) {
+            String url = ORDER_SERVICE_URL + "/user/" + clientId;
 
-        ResponseEntity<List<Object>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Object>>() {}
-        );
+            ResponseEntity<List<Object>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Object>>() {}
+            );
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response.getBody());
-    }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response.getBody());
+        }
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
         ParameterizedTypeReference<List<Order>> responseType =
