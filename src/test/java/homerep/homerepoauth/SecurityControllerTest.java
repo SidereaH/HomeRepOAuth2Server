@@ -4,6 +4,7 @@ import homerep.homerepoauth.controllers.SecurityController;
 import homerep.homerepoauth.controllers.userservice.GatewayUsersController;
 import homerep.homerepoauth.models.*;
 import homerep.homerepoauth.models.dto.SignupRequest;
+import homerep.homerepoauth.models.orderservice.dto.ApproveRequest;
 import homerep.homerepoauth.repositories.RefreshTokenRepository;
 import homerep.homerepoauth.repositories.UserRepository;
 import homerep.homerepoauth.security.JwtCore;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +35,8 @@ class SecurityControllerTest {
     private RefreshTokenRepository refreshTokenRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private KafkaTemplate<String, ApproveRequest   >   kafkaTemplate;
 
     @Mock
     private AuthenticationManager authenticationManager;

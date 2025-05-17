@@ -45,6 +45,10 @@ public class    SecurityController {
         this.gatewayUsersController = gatewayUsersController;
     }
     @Autowired
+    public void setKafkaTemplate(KafkaTemplate<String, ApproveRequest> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+    @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
