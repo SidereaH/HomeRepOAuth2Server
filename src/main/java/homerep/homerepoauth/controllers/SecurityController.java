@@ -50,6 +50,9 @@ public class    SecurityController {
         if (userRepository.existsByUsername(signupRequest.getUsername())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
+        if (userRepository.existsByEmail(signupRequest.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+        }
 
 
         User user = new User();
