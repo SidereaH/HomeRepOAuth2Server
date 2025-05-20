@@ -120,6 +120,15 @@ public class GatewayUsersController {
             return ResponseEntity.status(e.getStatusCode()).build();
         }
     }
+    @GetMapping("/{id}/mail")
+    public ResponseEntity<String> getClientByEmail(@PathVariable Long id) {
+        try{
+            ResponseEntity<String> response =restTemplate.getForEntity(USER_SERVICE_URL + "/" + id + "/mail", String.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
+        }
+    }
 
     @PostMapping("/{id}/location")
     public ResponseEntity<Void> updateClientLocation(
