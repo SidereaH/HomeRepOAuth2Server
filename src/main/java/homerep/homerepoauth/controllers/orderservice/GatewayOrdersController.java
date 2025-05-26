@@ -8,6 +8,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -104,6 +105,25 @@ public class GatewayOrdersController {
                 request,
                 new ParameterizedTypeReference<DefaultResponse<Order, String>>() {}
         );
+    }
+    @DeleteMapping("/{orderId")
+    public ResponseEntity<Object> deleteOrder(@PathVariable Long orderId) {
+        String url = ORDER_SERVICE_URL + "/" + orderId;
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.DELETE,
+                    null,
+                    String.class
+            );
+
+            return ResponseEntity.status(response.getStatusCode()).build();
+        } catch (HttpClientErrorException.NotFound ex) {
+            return ResponseEntity.notFound().build();
+        } catch (RestClientException ex) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/order/findWorker")
