@@ -106,7 +106,7 @@ public class GatewayOrdersController {
                 new ParameterizedTypeReference<DefaultResponse<Order, String>>() {}
         );
     }
-    @DeleteMapping("/{orderId")
+    @DeleteMapping("/{orderId}")
     public ResponseEntity<Object> deleteOrder(@PathVariable Long orderId) {
         String url = ORDER_SERVICE_URL + "/" + orderId;
 
