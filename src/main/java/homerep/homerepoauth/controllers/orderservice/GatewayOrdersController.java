@@ -4,6 +4,7 @@ import homerep.homerepoauth.config.HomeRepProperties;
 import homerep.homerepoauth.models.orderservice.Order;
 import homerep.homerepoauth.models.orderservice.dto.AssignResponse;
 import homerep.homerepoauth.models.orderservice.dto.DefaultResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/orders")
+@Slf4j
 public class GatewayOrdersController {
 
     private final RestTemplate restTemplate;
@@ -50,20 +52,16 @@ public class GatewayOrdersController {
                     .body(new DefaultResponse(order, e.getMessage()));
         }
     }
-        @GetMapping("/user/{clientId}")
-        public ResponseEntity<List<Object>> getUserOrders(@PathVariable Long clientId) {
-            String url = ORDER_SERVICE_URL + "/user/" + clientId;
-
-            ResponseEntity<List<Object>> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Object>>() {}
-            );
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response.getBody());
+    @GetMapping("/user/{clientId}")
+    public ResponseEntity<List<Object>> getUserOrders(@PathVariable Long clientId) {
+        String url = ORDER_SERVICE_URL + "/user/" + clientId;
+        ResponseEntity<List<Object>> response = restTemplate.exchange(                 url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Object>>() {}
+        );
+         return ResponseEntity.ok()
+                 .contentType(MediaType.APPLICATION_JSON)                  .body(response.getBody());
         }
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -98,7 +96,7 @@ public class GatewayOrdersController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Order> request = new HttpEntity<>(order, headers);
-
+        log.info(order.getAddress().getLatitude() + " " + order.getAddress().getLongitude());
         return restTemplate.exchange(
                 url,
                 HttpMethod.PUT,
